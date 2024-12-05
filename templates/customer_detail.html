@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}{{ customer.name }}{% endblock %}
+
+{% block header %}Customer Details{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Customer Info -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ customer.name }}</h5>
+                <p class="card-text">
+                    <strong>Company:</strong> {{ customer.company }}<br>
+                    <strong>Email:</strong> {{ customer.email }}<br>
+                    <strong>Phone:</strong> {{ customer.phone }}<br>
+                    <strong>Status:</strong> 
+                    <span class="badge bg-{{ 'success' if customer.status == 'active' else 'warning' }}">
+                        {{ customer.status }}
+                    </span>
+                </p>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editCustomerModal">
+                    Edit Details
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactions -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Interactions</h5>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#newInteractionModal">
+                    Add Interaction
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Notes</th>
+                                <th>User</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for interaction in customer.interactions %}
+                            <tr>
+                                <td>{{ interaction.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>{{ interaction.type }}</td>
+                                <td>{{ interaction.notes }}</td>
+                                <td>{{ interaction.user.username }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Interaction Modal -->
+<div class="modal fade" id="newInteractionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Interaction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('add_interaction', customer_id=customer.id) }}">
+                    <div class="mb-3">
+                        <label for="type" class="form-label">Type</label>
+                        <select class="form-select" id="type" name="type" required>
+                            <option value="call">Call</option>
+                            <option value="email">Email</option>
+                            <option value="meeting">Meeting</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Interaction</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

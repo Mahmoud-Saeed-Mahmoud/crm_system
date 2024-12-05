@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block header %}Analytics Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Summary Cards -->
+    <div class="col-md-3 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 bg-primary bg-opacity-10 rounded me-3">
+                        <i class='bx bxs-user text-primary' style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h6 class="card-title mb-0">Total Customers</h6>
+                </div>
+                <h2 class="display-6 mb-2">{{ total_customers }}</h2>
+                <p class="text-success mb-0">
+                    <i class='bx bxs-up-arrow-alt'></i>
+                    {{ new_customers_month }} new this month
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 bg-success bg-opacity-10 rounded me-3">
+                        <i class='bx bxs-message-square-detail text-success' style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h6 class="card-title mb-0">Total Interactions</h6>
+                </div>
+                <h2 class="display-6 mb-2">{{ total_interactions }}</h2>
+                <p class="text-muted mb-0">Across all customers</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts -->
+    <div class="col-md-6 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Interaction Types</h5>
+                <div class="chart-container" style="position: relative; height:300px;">
+                    <canvas id="interactionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Customer Status Distribution</h5>
+                <div class="chart-container" style="position: relative; height:300px;">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Interaction Types Chart
+    const interactionCtx = document.getElementById('interactionChart').getContext('2d');
+    new Chart(interactionCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for type, count in interactions_by_type %}'{{ type|title }}',{% endfor %}],
+            datasets: [{
+                data: [{% for type, count in interactions_by_type %}{{ count }},{% endfor %}],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right'
+                }
+            }
+        }
+    });
+
+    // Customer Status Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'bar',
+        data: {
+            labels: [{% for status, count in status_distribution %}'{{ status|title }}',{% endfor %}],
+            datasets: [{
+                label: 'Number of Customers',
+                data: [{% for status, count in status_distribution %}{{ count }},{% endfor %}],
+                backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

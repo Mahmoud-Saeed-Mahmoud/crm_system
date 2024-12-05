@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}{% if customer %}Edit{% else %}New{% endif %} Customer{% endblock %}
+
+{% block header %}{% if customer %}Edit{% else %}Add New{% endif %} Customer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Customer Name*</label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   value="{{ customer.name if customer else '' }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="company" class="form-label">Company</label>
+                            <input type="text" class="form-control" id="company" name="company"
+                                   value="{{ customer.company if customer else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email*</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   value="{{ customer.email if customer else '' }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="phone" name="phone"
+                                   value="{{ customer.phone if customer else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status*</label>
+                        <select class="form-select" id="status" name="status" required>
+                            {% set status_options = ['lead', 'prospect', 'active', 'inactive'] %}
+                            {% for status_option in status_options %}
+                                <option value="{{ status_option }}"
+                                    {% if customer and customer.status == status_option %}selected{% endif %}>
+                                    {{ status_option|title }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            {% if customer %}Save Changes{% else %}Add Customer{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM System - {% block title %}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0,0,0,.1);
+            background-color: #f8f9fa;
+            padding: 1.5rem 1rem;
+        }
+        .nav-link {
+            color: #333;
+            padding: 0.8rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        .nav-link:hover {
+            background-color: #e9ecef;
+            color: #0d6efd;
+        }
+        .nav-link.active {
+            background-color: #e7f1ff;
+            color: #0d6efd;
+        }
+        .nav-link i {
+            margin-right: 10px;
+            font-size: 1.25rem;
+        }
+        .sidebar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            display: block;
+        }
+        .user-menu {
+            border-top: 1px solid #dee2e6;
+            padding-top: 1rem;
+            margin-top: 2rem;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+        }
+        .user-info i {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+            color: #6c757d;
+        }
+        .user-info span {
+            font-weight: 500;
+            color: #495057;
+        }
+        .logout-btn {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logout-btn i {
+            margin-right: 0.5rem;
+        }
+        .main-content {
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar">
+                <a href="{{ url_for('index') }}" class="sidebar-brand">
+                    <i class='bx bxs-cube'></i> CRM System
+                </a>
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" 
+                               href="{{ url_for('index') }}">
+                                <i class='bx bxs-dashboard'></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'new_customer' %}active{% endif %}" 
+                               href="{{ url_for('new_customer') }}">
+                                <i class='bx bxs-user-plus'></i>
+                                Add Customer
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'analytics' %}active{% endif %}" 
+                               href="{{ url_for('analytics') }}">
+                                <i class='bx bxs-bar-chart-alt-2'></i>
+                                Analytics
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'settings' %}active{% endif %}" 
+                               href="{{ url_for('settings') }}">
+                                <i class='bx bxs-cog'></i>
+                                Settings
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <!-- User Menu -->
+                    <div class="user-menu">
+                        <div class="user-info">
+                            <i class='bx bxs-user-circle'></i>
+                            <span>{{ current_user.username }}</span>
+                        </div>
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger logout-btn">
+                            <i class='bx bx-log-out'></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                    <h1 class="h2">{% block header %}{% endblock %}</h1>
+                </div>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    {% else %}
+    <div class="container">
+        {% block auth_content %}{% endblock %}
+    </div>
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
